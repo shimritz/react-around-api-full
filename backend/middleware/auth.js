@@ -7,16 +7,19 @@ const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return next(new Error('Authorization Required'));
+    res.status(403).send({ message: 'no authorization header provided' });
+    return;
   }
 
   const token = authorization.replace('Bearer ', '');
   let payload;
 
   try {
-    payload = jwt.verify(token, JWT_SECRET);
+    payload = jwt.verify(token, String(JWT_SECRET));
   } catch (err) {
-    return next(new Error('Authorization Required'));
+    // return next(new Error('Authorization Required'));
+    res.status(403).send({ message: 'unauthorized' });
+    return;
   }
 
   req.user = payload;

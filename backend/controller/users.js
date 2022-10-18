@@ -31,6 +31,10 @@ const getUserById = (req, res) => {
     });
 };
 
+const getCurrentUser = (req, res, next) => {
+  getUserById(req.user._id, res, next);
+};
+
 const login = (req, res, next) => {
   const { email, password } = req.body;
   return Users.findUserByCredentials(email, password)
@@ -146,6 +150,7 @@ const updateAvatar = (req, res) => {
 module.exports = {
   getUsers,
   getUserById,
+  getCurrentUser,
   createUser,
   login,
   updateAvatar,

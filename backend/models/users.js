@@ -1,9 +1,8 @@
-/* eslint-disable linebreak-style */
+/* eslint-disable func-names */ /* eslint-disable linebreak-style */
 
 const { default: mongoose } = require('mongoose');
 const validator = require('validator');
-
-// /^http(s)?:\/\/[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/;
+const bcrypt = require('bcrypt');
 
 // eslint-disable-next-line operator-linebreak
 const avatarRegExp =
@@ -37,6 +36,7 @@ const userSchema = new mongoose.Schema(
       },
     },
     email: {
+      type: String,
       required: [true, 'The "email" field must be filled in'],
       unique: true,
       validate: {
@@ -52,5 +52,28 @@ const userSchema = new mongoose.Schema(
   },
   { versionKey: false }
 );
+
+userSchema.statics.findUserByCredentials = function (email, password) {
+  return this.findOne({ email })
+    .select('+password')
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new Error('Incorrect email of password'));
+      }
+      // bcrypt.hash(password, 10).then((err, res) => console.log('two-1', res));
+      return bcrypt.compare(password, user.password).then((match) => {
+        if (!match) {
+          return Promise.reject(new Error('Incorrect email of password'));
+        }
+
+        return user;
+      });
+    });
+};
+
+userSchema.methods.toJSON = function () {
+  const { password, ...obj } = this.toObject();
+  return obj;
+};
 
 module.exports = mongoose.model('user', userSchema);

@@ -1,4 +1,7 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const Users = require('../models/users');
+const JWT_SECRET = require('../helpers/config');
 
 const getUsers = (req, res) =>
   Users.find({})
@@ -28,10 +31,40 @@ const getUserById = (req, res) => {
     });
 };
 
-const createUser = (req, res) => {
-  const { name, avatar, about } = req.body;
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+  return Users.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, String(JWT_SECRET), {
+        expiresIn: '7d',
+      });
+      res.send({ data: user.toJSON(), token });
+    })
+    .catch(() => {
+      next(new Error('Incorrect email or password'));
+    });
+};
 
-  return Users.create({ name, avatar, about })
+const createUser = (req, res) => {
+  // eslint-disable-next-line object-curly-newline
+  const { name, avatar, about, email, password } = req.body;
+  Users.findOne({ email })
+    .then((user) => {
+      if (user) {
+        throw new Error('The user with the provided email already exists');
+      } else {
+        return bcrypt.hash(password, 10);
+      }
+    })
+    .then((hash) =>
+      Users.create({
+        name,
+        avatar,
+        about,
+        email,
+        password: hash,
+      })
+    )
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -114,6 +147,7 @@ module.exports = {
   getUsers,
   getUserById,
   createUser,
+  login,
   updateAvatar,
   updateUser,
 };

@@ -29,17 +29,31 @@ const createCard = (req, res) => {
     });
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-
-  return Card.findByIdAndRemove(cardId)
+  Card.findById(cardId)
     .orFail(() => {
       const error = new Error('No card found for the specified id');
       error.status = 404;
-
       throw error;
     })
-    .then((card) => res.status(200).send({ message: '', data: card }))
+    .then((card) => {
+      if (!card.owner.equals(req.user._id)) {
+        next(new Error('You cannot delete someone elses card'));
+      } else {
+        Card.deleteOne(card).then(() => res.send({ data: card }));
+      }
+    })
+
+    // return Card.findByIdAndRemove(cardId)
+    //   .orFail(() => {
+    //     const error = new Error('No card found for the specified id');
+    //     error.status = 404;
+    //     throw error;
+    //   })
+    //   .then((card) => {
+    //     res.status(200).send({ message: '', data: card });
+    //   })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Invalid card id' });

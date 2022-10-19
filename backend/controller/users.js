@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Users = require('../models/users');
@@ -42,9 +43,11 @@ const login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, String(JWT_SECRET), {
         expiresIn: '7d',
       });
+
       res.send({ data: user.toJSON(), token });
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log('login:', err);
       next(new Error('Incorrect email or password'));
     });
 };
@@ -84,7 +87,7 @@ const createUser = (req, res) => {
 
 const updateUser = (req, res) => {
   const { name, about } = req.body;
-
+  console.log('req:', req.user);
   const id = req.user._id;
   if (!name || !about) {
     return res.status(400).send({ message: 'Both name and job cant be empty' });
@@ -106,10 +109,13 @@ const updateUser = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
+      console.log('update user err:', err);
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'The user id is not correct ' });
       } else if (err.status === 404) {
         res.status(404).send({ message: 'error has occured' });
+      } else {
+        res.status(500).send({ message: 'internal error' });
       }
     });
 };

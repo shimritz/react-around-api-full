@@ -20,10 +20,8 @@
   background-color: #ffffff;
   border-radius: 10px;
   justify-content: center;
-  /* width: 430px; */
 }
 .modal__popup-image {
-  /* max-width: 100%; */
   width: 75vw;
   height: 75vh;
 }
@@ -41,8 +39,26 @@
 
 .modal_type_preview .modal__container {
   background-color: transparent;
-  /* max-width: 75vw; */
-  /* height: 75vh; */
+  position: relative;
+  margin: 0 auto;
+}
+
+.modal_type_tooltip {
+  max-width: 430px;
+  height: 330px;
+  background: white;
+  border-radius: 10px;
+  margin: 0 auto;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 60px;
+  text-align: center;
+}
+
+.modal__container_type_tooltip {
+  display: flex;
+  flex-direction: column;
 }
 
 .form__title_type_delete-card {
@@ -77,11 +93,21 @@
   cursor: pointer;
 }
 
+.modal__close-btn_type_tooltip {
+  top: -84px;
+  right: -60px;
+}
+
 @media screen and (max-width: 530px) {
   .modal__close-btn {
     width: 26px;
     height: 26px;
     top: -40px;
     right: 0;
+  }
+
+  .modal_type_tooltip {
+    max-width: 280px;
+    height: 308px;
   }
 }

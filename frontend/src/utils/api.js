@@ -28,7 +28,6 @@ class Api {
   }
 
   deleteCard(cardId) {
-    console.log("from api", cardId);
     return fetch(
       `${this._baseUrl}/cards/${cardId}`,
       {
@@ -80,9 +79,12 @@ class Api {
 }
 
 const api = new Api({
-  baseUrl: "https://around.nomoreparties.co/v1/cohort-3-en",
+  // baseUrl: "https://around.nomoreparties.co/v1/cohort-3-en",
+  // authorization: "eb6ecb60-6b2b-4de0-89d0-cf4bc28e2e2a",
+  baseUrl: "http://localhost:3001",
   headers: {
-    authorization: "eb6ecb60-6b2b-4de0-89d0-cf4bc28e2e2a",
+    Authorization:
+      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzUwNDYzMWYwZmViZjI1NmNiMGU3NTMiLCJpYXQiOjE2NjYyMDUyNDYsImV4cCI6MTY2NjgxMDA0Nn0.5mxCnAwKx5kvmbK-RRm9HgnrcHwchprcJhcIL_6Mlds",
     "Content-Type": "application/json",
   },
 });

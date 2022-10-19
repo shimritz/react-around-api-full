@@ -16,27 +16,25 @@ function EditAvatarPopup({ onUpdateAvatar, isOpen, onClose, onSubmit }) {
   }
 
   return (
-    <>
-      <PopupWithForm
-        name="changeAvatar"
-        title="Change avatar"
-        isOpen={isOpen}
-        onClose={onClose}
-        buttonText={"Save"}
-        onSubmit={handleSubmitAvatar}
-      >
-        <input
-          className="form__input form__input_type_image"
-          type="url"
-          name="image"
-          id="avatarImage-input"
-          placeholder="Image URL"
-          required
-          ref={inputRef}
-        />
-        <span id="avatarImage-input-error"></span>
-      </PopupWithForm>
-    </>
+    <PopupWithForm
+      name="changeAvatar"
+      title="Change avatar"
+      isOpen={isOpen}
+      onClose={onClose}
+      buttonText={"Save"}
+      onSubmit={handleSubmitAvatar}
+    >
+      <input
+        className="form__input form__input_type_image"
+        type="url"
+        name="image"
+        id="avatarImage-input"
+        placeholder="Image URL"
+        required
+        ref={inputRef}
+      />
+      <span id="avatarImage-input-error"></span>
+    </PopupWithForm>
   );
 }
 export default EditAvatarPopup;

@@ -1,6 +1,11 @@
 import React from "react";
+import { Route, Switch, useHistory, Redirect } from "react-router-dom";
 import Header from "./Header";
 import Main from "./Main";
+import Login from "./Login";
+import Register from "./Register";
+import ProtectedRoute from "./ProtectedRoute";
+
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
@@ -12,6 +17,8 @@ import EditAvatarPopup from "./EditAvatarPopup";
 import Card from "./Card";
 import AddPlacePopup from "./AddPlacePopup";
 import DeleteCardPopup from "./DeleteCardPopup";
+import auth from "../utils/auth";
+import InfoTooltip from "./InfoTooltip";
 
 function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
@@ -34,19 +41,115 @@ function App() {
   });
   const [cards, setCards] = React.useState([]);
 
+  const [loggedIn, setLoggedIn] = React.useState(null);
+  const [userData, setUserData] = React.useState(null);
+  const [email, setEmail] = React.useState("");
+  const [toolTipStatus, setToolTipStatus] = React.useState("");
+  const [isInfoToolTipOpen, setIsInfoToolTipOpen] = React.useState(false);
+  const history = useHistory();
+
   React.useEffect(() => {
     api
       .getUserInfo()
       .then((res) => {
         setCurrentUser({
-          _id: res._id,
-          name: res.name,
-          aboutMe: res.about,
-          avatar: res.avatar,
+          _id: res.data._id,
+          name: res.data.name,
+          aboutMe: res.data.about,
+          avatar: res.data.avatar,
         });
       })
       .catch((error) => console.log(error));
   }, []);
+
+  React.useEffect(() => {
+    const jwt = localStorage.getItem("jwt");
+    if (jwt) {
+      auth
+        .checkToken(jwt)
+        .then((res) => {
+          if (res) {
+            setEmail(res.data.email);
+            setLoggedIn(true);
+            history.push("/");
+          } else {
+            localStorage.removeItem("jwt");
+          }
+        })
+        .catch((error) => console.log(error));
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const closeByEscape = (e) => {
+      if (e.key === "Escape") {
+        closeAllPopups();
+      }
+    };
+
+    document.addEventListener("keydown", closeByEscape);
+
+    return () => document.removeEventListener("keydown", closeByEscape);
+  }, []);
+
+  React.useEffect(() => {
+    api
+      .getInitialCards()
+      .then((res) => {
+        setCards(res.data);
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
+  function onLogin({ email, password }) {
+    auth
+      .signin(email, password)
+      .then((res) => {
+        if (res) {
+          setLoggedIn(true);
+          setEmail(email);
+          localStorage.setItem("jwt", res.token);
+          setToolTipStatus("success");
+          history.push("/");
+        } else {
+          setToolTipStatus("fail");
+          setIsInfoToolTipOpen(true);
+        }
+      })
+      .catch((error) => {
+        setToolTipStatus("fail");
+      })
+      .finally(() => {
+        setIsInfoToolTipOpen(true);
+      });
+  }
+
+  function onRegister({ email, password }) {
+    auth
+      .signup(email, password)
+      .then((res) => {
+        if (res.data._id) {
+          setToolTipStatus("success");
+
+          history.push("/signin");
+        } else {
+          setToolTipStatus("fail");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setToolTipStatus("fail");
+      })
+      .finally(() => {
+        setIsInfoToolTipOpen(true);
+      });
+  }
+
+  function onSignOut() {
+    localStorage.removeItem("jwt");
+    setLoggedIn(false);
+    history.push("/signin");
+  }
 
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(true);
@@ -77,6 +180,7 @@ function App() {
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setIsPreviewImageOpen(false);
+    setIsInfoToolTipOpen(false);
     setSelectedCard({ name: "", link: "" });
   }
 
@@ -96,7 +200,6 @@ function App() {
   };
 
   const handleUpdateAvatar = (avatar) => {
-    console.log("avatar", avatar);
     api
       .editAvatar(avatar)
       .then((res) => {
@@ -110,15 +213,6 @@ function App() {
       })
       .catch((err) => console.log(err));
   };
-
-  React.useEffect(() => {
-    api
-      .getInitialCards()
-      .then((res) => {
-        setCards(res);
-      })
-      .catch((error) => console.log(error));
-  }, []);
 
   function handleCardLike(card) {
     // Check one more time if this card was already liked
@@ -152,67 +246,71 @@ function App() {
     api
       .createCard(card)
       .then((newCard) => {
-        setCards([newCard, ...cards]);
+        setCards([newCard.data, ...cards]);
         closeAllPopups();
       })
       .catch((err) => console.log(err));
   }
 
   return (
-    <div>
-      <CurrentUserContext.Provider value={currentUser}>
-        <Header />
-        <Main
-          onEditProfileClick={handleEditProfileClick}
-          onAddPlaceClick={handleAddPlaceClick}
-          onEditAvatarClick={handleEditAvatarClick}
-          onCardClick={handleCardClick}
-          onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
-        />
-        <ImagePopup
-          card={selectedCard}
-          isOpen={isPreviewImageOpen}
-          onClose={closeAllPopups}
-        />
-        <EditProfilePopup
-          isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups}
-          // onUpdateUser={handleUpdateUser}
-          onUpdateUser={handleUpdateUser}
-        />
-        <EditAvatarPopup
-          isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups}
-          onUpdateAvatar={handleUpdateAvatar}
-        />
-        <DeleteCardPopup
-          isOpen={isDeletePopupOpen}
-          onClose={closeAllPopups}
-          onSubmit={handleCardDelete}
-        />
-        <AddPlacePopup
-          isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}
-          onAddPlaceSubmit={handleAddPlaceSubmit}
-        />
-        <section className="photos">
-          {cards.map((card) => (
-            <Card
-              {...card}
-              key={card._id}
-              onCardClick={handleCardClick}
-              // onTrashBinClick={handleTrashBinClick}
-              onCardLike={handleCardLike}
-              onCardDelete={handleCardDelete}
-              onTrashBinClick={handleTrashBinClick}
-            />
-          ))}
-          ;
-        </section>
-        <Footer />
-      </CurrentUserContext.Provider>
-    </div>
+    <CurrentUserContext.Provider value={currentUser}>
+      <Header email={email} onSignOut={onSignOut} />
+      <Switch>
+        <Route path="/signin">
+          <Login onLogin={onLogin} />
+        </Route>
+        <Route exact path="/signup">
+          <Register onRegister={onRegister} />
+        </Route>
+        <ProtectedRoute exact path="/" loggedIn={loggedIn}>
+          <Main
+            onEditProfileClick={handleEditProfileClick}
+            onAddPlaceClick={handleAddPlaceClick}
+            onEditAvatarClick={handleEditAvatarClick}
+            onCardClick={handleCardClick}
+            onCardLike={handleCardLike}
+            onCardDelete={handleCardDelete}
+            cards={cards}
+          />
+        </ProtectedRoute>
+
+        <Route>
+          {loggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
+        </Route>
+      </Switch>
+
+      <ImagePopup
+        card={selectedCard}
+        isOpen={isPreviewImageOpen}
+        onClose={closeAllPopups}
+      />
+      <InfoTooltip
+        isOpen={isInfoToolTipOpen}
+        status={toolTipStatus}
+        onClose={closeAllPopups}
+      />
+      <EditProfilePopup
+        isOpen={isEditProfilePopupOpen}
+        onClose={closeAllPopups}
+        onUpdateUser={handleUpdateUser}
+      />
+      <EditAvatarPopup
+        isOpen={isEditAvatarPopupOpen}
+        onClose={closeAllPopups}
+        onUpdateAvatar={handleUpdateAvatar}
+      />
+      <DeleteCardPopup
+        isOpen={isDeletePopupOpen}
+        onClose={closeAllPopups}
+        onSubmit={handleCardDelete}
+      />
+      <AddPlacePopup
+        isOpen={isAddPlacePopupOpen}
+        onClose={closeAllPopups}
+        onAddPlaceSubmit={handleAddPlaceSubmit}
+      />
+      <Footer />
+    </CurrentUserContext.Provider>
   );
 }
 

@@ -1,6 +1,7 @@
 import React from "react";
 
 import { api } from "../utils/api";
+import Card from "./Card";
 
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
@@ -22,9 +23,8 @@ function Main({
         <div onClick={onEditAvatarClick} className="profile__avatar-container">
           <img
             className="profile__avatar"
-            // src={profilePhoto}
             src={currentUser.avatar}
-            alt=""
+            alt="userAvatar"
           />
         </div>
         <div className="profile__info">
@@ -47,21 +47,20 @@ function Main({
           onClick={onAddPlaceClick}
         ></button>
       </section>
-
-      {/* <section className="photos">
-        {cards.map((card) => {
-          return (
+      <section className="photos">
+        {cards &&
+          cards.map((card) => (
             <Card
               {...card}
               key={card._id}
               onCardClick={onCardClick}
+              onCardLike={onCardLike}
+              onCardDelete={onCardDelete}
               onTrashBinClick={onTrashBinClick}
-              onCardLike={handleCardLike}
-              onCardDelete={handleCardDelete}
             />
-          );
-        })}
-      </section> */}
+          ))}
+        ;
+      </section>
     </main>
   );
 }

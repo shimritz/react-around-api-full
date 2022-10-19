@@ -9,10 +9,8 @@ const getUsers = (req, res) =>
     .then((users) => res.status(200).send({ data: users }))
     .catch((err) => res.status(500).send(err));
 
-const getUserById = (req, res) => {
-  const { id } = req.params;
-
-  return Users.findById(id)
+const getUserById = (req, res) =>
+  Users.findById(req.user._id)
     .orFail(() => {
       const error = new Error('User id not found');
       error.status = 404;
@@ -30,10 +28,9 @@ const getUserById = (req, res) => {
         res.status(500).send({ message: err.message });
       }
     });
-};
 
 const getCurrentUser = (req, res, next) => {
-  getUserById(req.user._id, res, next);
+  getUserById(req, res, next);
 };
 
 const login = (req, res, next) => {
@@ -46,8 +43,7 @@ const login = (req, res, next) => {
 
       res.send({ data: user.toJSON(), token });
     })
-    .catch((err) => {
-      console.log('login:', err);
+    .catch(() => {
       next(new Error('Incorrect email or password'));
     });
 };
@@ -87,7 +83,7 @@ const createUser = (req, res) => {
 
 const updateUser = (req, res) => {
   const { name, about } = req.body;
-  console.log('req:', req.user);
+
   const id = req.user._id;
   if (!name || !about) {
     return res.status(400).send({ message: 'Both name and job cant be empty' });
@@ -96,8 +92,7 @@ const updateUser = (req, res) => {
   return Users.findByIdAndUpdate(
     id,
     { name, about },
-    { new: true },
-    { runValidators: true }
+    { new: true, runValidators: true }
   )
     .orFail(() => {
       const error = new Error('User with specified id is not found');
@@ -109,7 +104,6 @@ const updateUser = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      console.log('update user err:', err);
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'The user id is not correct ' });
       } else if (err.status === 404) {
@@ -132,8 +126,7 @@ const updateAvatar = (req, res) => {
   return Users.findByIdAndUpdate(
     id,
     { avatar },
-    { new: true },
-    { runValidators: true }
+    { new: true, runValidators: true }
   )
     .orFail(() => {
       const error = new Error('User with specified id is not found');

@@ -23,7 +23,6 @@ function AddPlacePopup({ isOpen, onClose, onAddPlaceSubmit }) {
   };
   const handleImageChange = (evt) => {
     setImage(evt.target.value);
-    console.log(image);
   };
 
   return (

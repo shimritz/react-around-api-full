@@ -4,10 +4,43 @@
   border-bottom: rgba(84, 84, 84, 0.7) 1px solid;
 }
 
+.header__wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .header__logo {
   max-width: 173px;
   min-height: 33px;
   margin-bottom: 41px;
+}
+
+.header__content {
+  display: flex;
+  gap: 24px;
+}
+
+.header__user {
+  color: white;
+}
+
+.header__logout {
+  background-color: transparent;
+  color: #a9a9a9;
+  size: 18px;
+  cursor: pointer;
+}
+
+.header__link-to-signin {
+  text-decoration: none;
+  font-size: 18px;
+  color: #a9a9a9;
+}
+.header__link-to-signup {
+  text-decoration: none;
+  color: #a9a9a9;
+  font-size: 18px;
 }
 
 @media screen and (max-width: 550px) {

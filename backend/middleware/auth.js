@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = require('../helpers/config');
-// const UnauthorizedError = require('../errors/unauthorized-error');
+const UnauthorizedError = require('../errors/unauthorized-error');
 
 // eslint-disable-next-line consistent-return
 const auth = (req, res, next) => {
@@ -15,9 +15,8 @@ const auth = (req, res, next) => {
   try {
     payload = jwt.verify(token, String(JWT_SECRET));
   } catch (err) {
-    // return next(new Error('Authorization Required'));
-    res.status(403).send({ message: 'unauthorized' });
-    return;
+    next(new UnauthorizedError('Authorization Required'));
+    // res.status(403).send({ message: 'unauthorized' });
   }
 
   req.user = payload;

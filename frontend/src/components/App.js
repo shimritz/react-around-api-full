@@ -60,7 +60,7 @@ function App() {
         });
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [loggedIn]);
 
   React.useEffect(() => {
     const jwt = localStorage.getItem("jwt");

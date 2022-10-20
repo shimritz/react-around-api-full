@@ -35,7 +35,8 @@ const login = (req, res, next) => {
 
       res.send({ data: user.toJSON(), token });
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log('err:', err);
       next(new Error('Incorrect email or password'));
     });
 };

@@ -4,11 +4,13 @@ const cors = require('cors');
 
 const router = require('express').Router();
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 const auth = require('./middleware/auth');
+const { requestLogger, errorLogger } = require('./middleware/logger');
 
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
-const NotFoundError = require('./errors/not-found-error');
+// const NotFoundError = require('./errors/not-found-error');
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 const { PORT = 3001 } = process.env;
@@ -28,20 +30,21 @@ const {
   validateUser,
 } = require('./middleware/validation');
 
+app.use(requestLogger);
+
 app.post('/signup', validateUser, createUser);
 app.post('/signin', validateAuthentication, login);
-
-app.get('/hw', (req, res) => {
-  res.send('Hello World!');
-});
 
 router.use(auth);
 router.use('/cards', cardRouter);
 router.use('/users', userRouter);
-router.use((req, res, next) => {
-  next(new NotFoundError('Not found'));
-});
+
+// router.use((req, res, next) => {
+//   next(new NotFoundError('Not found'));
+// });
 app.use('/', router);
+app.use(errorLogger);
+app.use(errors());
 
 app.use(errorHandler);
 

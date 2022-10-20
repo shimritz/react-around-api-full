@@ -55,7 +55,7 @@ const deleteCard = (req, res, next) => {
 
 const likeCard = (req, res) => {
   const { cardId } = req.params;
-  const userId = req.params._id;
+  const userId = req.user._id;
 
   return Card.findByIdAndUpdate(
     cardId,
@@ -63,7 +63,9 @@ const likeCard = (req, res) => {
     { new: true }
   )
     .orFail(() => new NotFoundError('No card found for the specified id'))
-    .then((card) => res.status(200).send({ message: '', data: card }))
+    .then((card) => {
+      res.status(200).send({ data: card });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Invalid card id' });
@@ -77,15 +79,14 @@ const likeCard = (req, res) => {
 
 const disLikeCard = (req, res) => {
   const { cardId } = req.params;
-  const userId = req.params._id;
-
+  const userId = req.user._id;
   return Card.findByIdAndUpdate(
     cardId,
-    { $pull: { likes: userId } }, // add _id to the array if it's not there yet
+    { $pull: { likes: userId } }, // remove _id to the array
     { new: true }
   )
     .orFail(() => new NotFoundError('No card found for the specified id'))
-    .then((card) => res.status(200).send({ message: '', data: card }))
+    .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Invalid card id' });

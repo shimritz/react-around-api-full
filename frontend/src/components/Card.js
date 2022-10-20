@@ -14,7 +14,7 @@ function Card({
 }) {
   const currentUser = React.useContext(CurrentUserContext);
   // Checking if the current user is the owner of the current card
-  const isOwn = owner._id === currentUser._id;
+  const isOwn = owner === currentUser._id;
   const isLiked = likes.some((user) => user._id === currentUser._id);
 
   function handleClick() {

@@ -216,15 +216,14 @@ function App() {
 
   function handleCardLike(card) {
     // Check one more time if this card was already liked
-    const isLiked = card.likes.some((user) => user._id === currentUser._id);
-
+    const isLiked = card.likes.some((user) => user === currentUser._id);
     // Send a request to the API and getting the updated card data
     api
       .changeLikeCardStatus(card._id, !isLiked)
-      .then((newCard) => {
+      .then((updatedCard) => {
         setCards((state) =>
-          state.map((currentCard) =>
-            currentCard._id === card._id ? newCard : currentCard
+          state.map((existingCard) =>
+            existingCard._id === card._id ? updatedCard.data : existingCard
           )
         );
       })

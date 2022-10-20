@@ -60,14 +60,14 @@ class Api {
   }
 
   addLike(id) {
-    return fetch(`${this._baseUrl}/cards/likes/${id}`, {
+    return fetch(`${this._baseUrl}/cards/${id}/likes`, {
       headers: this._headers,
       method: "PUT",
     }).then(this._checkResponse);
   }
 
   removeLike(id) {
-    return fetch(`${this._baseUrl}/cards/likes/${id}`, {
+    return fetch(`${this._baseUrl}/cards/${id}/likes`, {
       headers: this._headers,
       method: "DELETE",
     }).then(this._checkResponse);
@@ -86,7 +86,7 @@ const api = new Api({
   baseUrl: process.env.REACT_APP_BASE_URL,
   headers: {
     Authorization:
-      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzUwNDYzMWYwZmViZjI1NmNiMGU3NTMiLCJpYXQiOjE2NjYyMDUyNDYsImV4cCI6MTY2NjgxMDA0Nn0.5mxCnAwKx5kvmbK-RRm9HgnrcHwchprcJhcIL_6Mlds",
+      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzUxODcxNDcxZDg0YjJlOWY1NzRiY2EiLCJpYXQiOjE2NjYyOTc4ODUsImV4cCI6MTY2NjkwMjY4NX0.1LkZVsykcJ5r8Oi9JVro5rAeRuwnQxBtNi7Ba_Jb2cQ",
     "Content-Type": "application/json",
   },
 });

@@ -101,10 +101,6 @@ const updateAvatar = (req, res, next) => {
 
   const id = req.user._id;
 
-  // if (!avatar) {
-  //   return res.status(400).send({ message: 'avatar cant be empty' });
-  // }
-
   return Users.findByIdAndUpdate(
     id,
     { avatar },

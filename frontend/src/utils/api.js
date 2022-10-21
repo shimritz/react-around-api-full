@@ -76,17 +76,17 @@ class Api {
   changeLikeCardStatus(id, isLiked) {
     return isLiked ? this.addLike(id) : this.removeLike(id);
   }
+
+  setAuthorizationHeader(token) {
+    this._headers["Authorization"] = "Bearer " + token;
+  }
 }
 
 // baseUrl: "https://around.nomoreparties.co/v1/cohort-3-en",
 // authorization: "eb6ecb60-6b2b-4de0-89d0-cf4bc28e2e2a",
-console.log("base-url", process.env.REACT_APP_BASE_URL);
-console.log("base-url", process.env.PUBLIC_URL);
 const api = new Api({
   baseUrl: process.env.REACT_APP_BASE_URL,
   headers: {
-    Authorization:
-      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzUxODcxNDcxZDg0YjJlOWY1NzRiY2EiLCJpYXQiOjE2NjYyOTc4ODUsImV4cCI6MTY2NjkwMjY4NX0.1LkZVsykcJ5r8Oi9JVro5rAeRuwnQxBtNi7Ba_Jb2cQ",
     "Content-Type": "application/json",
   },
 });

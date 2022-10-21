@@ -46,39 +46,59 @@ function App() {
   const [email, setEmail] = React.useState("");
   const [toolTipStatus, setToolTipStatus] = React.useState("");
   const [isInfoToolTipOpen, setIsInfoToolTipOpen] = React.useState(false);
+  const [token, setToken] = React.useState(localStorage.getItem("jwt"));
   const history = useHistory();
 
   React.useEffect(() => {
-    api
-      .getUserInfo()
-      .then((res) => {
-        setCurrentUser({
-          _id: res.data._id,
-          name: res.data.name,
-          aboutMe: res.data.about,
-          avatar: res.data.avatar,
-        });
-      })
-      .catch((error) => console.log(error));
+    if (token) {
+      api.setAuthorizationHeader(token);
+      setLoggedIn(true);
+    }
+  }, [token]);
+
+  React.useEffect(() => {
+    if (loggedIn) {
+      api
+        .getUserInfo(token)
+        .then((res) => {
+          setCurrentUser({
+            _id: res.data._id,
+            name: res.data.name,
+            aboutMe: res.data.about,
+            avatar: res.data.avatar,
+          });
+        })
+        .catch((error) => console.log(error));
+    }
   }, [loggedIn]);
 
   React.useEffect(() => {
-    const jwt = localStorage.getItem("jwt");
-    if (jwt) {
+    if (loggedIn) {
       auth
-        .checkToken(jwt)
+        .checkToken(token)
         .then((res) => {
           if (res) {
             setEmail(res.data.email);
             setLoggedIn(true);
             history.push("/");
-          } else {
-            localStorage.removeItem("jwt");
           }
         })
         .catch((error) => console.log(error));
     }
-  }, []);
+  }, [loggedIn]);
+
+  React.useEffect(() => {
+    if (loggedIn) {
+      api
+        .getInitialCards(token)
+        .then((res) => {
+          setCards(res.data);
+        })
+        .catch((error) => console.log(error));
+    } else {
+      setCards([]);
+    }
+  }, [loggedIn]);
 
   React.useEffect(() => {
     const closeByEscape = (e) => {
@@ -92,23 +112,14 @@ function App() {
     return () => document.removeEventListener("keydown", closeByEscape);
   }, []);
 
-  React.useEffect(() => {
-    api
-      .getInitialCards()
-      .then((res) => {
-        setCards(res.data);
-      })
-      .catch((error) => console.log(error));
-  }, []);
-
   function onLogin({ email, password }) {
     auth
       .signin(email, password)
       .then((res) => {
-        if (res) {
+        if (res.token) {
+          setToken(res.token);
           setLoggedIn(true);
           setEmail(email);
-          localStorage.setItem("jwt", res.token);
           setToolTipStatus("success");
           history.push("/");
         } else {
@@ -146,8 +157,8 @@ function App() {
   }
 
   function onSignOut() {
-    localStorage.removeItem("jwt");
     setLoggedIn(false);
+    localStorage.setItem("jwt", null);
     history.push("/signin");
   }
 
@@ -189,10 +200,10 @@ function App() {
       .editProfile(name, about)
       .then((res) => {
         setCurrentUser({
-          _id: res._id,
-          name: res.name,
-          aboutMe: res.about,
-          avatar: res.avatar,
+          _id: res.data._id,
+          name: res.data.name,
+          aboutMe: res.data.about,
+          avatar: res.data.avatar,
         });
         closeAllPopups();
       })
@@ -204,10 +215,10 @@ function App() {
       .editAvatar(avatar)
       .then((res) => {
         setCurrentUser({
-          _id: res._id,
-          name: res.name,
-          aboutMe: res.about,
-          avatar: res.avatar,
+          _id: res.data._id,
+          name: res.data.name,
+          aboutMe: res.data.about,
+          avatar: res.data.avatar,
         });
         closeAllPopups();
       })
@@ -288,6 +299,7 @@ function App() {
         status={toolTipStatus}
         onClose={closeAllPopups}
       />
+      {/* HERE --> whats the difference? */}
       <EditProfilePopup
         isOpen={isEditProfilePopupOpen}
         onClose={closeAllPopups}
@@ -298,6 +310,7 @@ function App() {
         onClose={closeAllPopups}
         onUpdateAvatar={handleUpdateAvatar}
       />
+      {/* HERE-END */}
       <DeleteCardPopup
         isOpen={isDeletePopupOpen}
         onClose={closeAllPopups}

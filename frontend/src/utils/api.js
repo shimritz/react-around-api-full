@@ -82,8 +82,6 @@ class Api {
   }
 }
 
-// baseUrl: "https://around.nomoreparties.co/v1/cohort-3-en",
-// authorization: "eb6ecb60-6b2b-4de0-89d0-cf4bc28e2e2a",
 const api = new Api({
   baseUrl: process.env.REACT_APP_BASE_URL,
   headers: {

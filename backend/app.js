@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 
@@ -31,6 +33,13 @@ const {
 } = require('./middleware/validation');
 
 app.use(requestLogger);
+
+// TODO: remove after review
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Server will crash now');
+  }, 0);
+});
 
 app.post('/signup', validateUser, createUser);
 app.post('/signin', validateAuthentication, login);

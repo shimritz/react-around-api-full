@@ -6,7 +6,3 @@ This project is created with Reactjs, featuring authorization, registration and 
 **Figma**
 
 Link to the project in Figma: https://www.figma.com/file/SurN1jaeEQIhuZEDMhmWWf/Sprint-4%3A-Around-The-U.S.-%7C-desktop-%2B-mobile
-
-**Github pages**
-
-link to git hub pages: https://shimritz.github.io/react-around-auth/

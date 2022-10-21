@@ -18,27 +18,20 @@ class Auth {
   }
 
   signin(email, password) {
-    return (
-      fetch(`${this.baseUrl}/signin`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      })
-        .then(this._checkResponse)
-        //   console.log(response);
-        //   if (response.ok) {
-        //     return response.json();
-        //   }
-        // })
-        .then((data) => {
-          localStorage.setItem("jwt", data.token);
-          localStorage.setItem("email", email);
-          return data;
-        })
-    );
+    return fetch(`${this.baseUrl}/signin`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    })
+      .then(this._checkResponse)
+      .then((data) => {
+        localStorage.setItem("jwt", data.token);
+        localStorage.setItem("email", email);
+        return data;
+      });
   }
 
   checkToken(token) {

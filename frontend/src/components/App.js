@@ -74,7 +74,6 @@ function App() {
 
   React.useEffect(() => {
     if (loggedIn) {
-      console.log("islogedein", loggedIn);
       auth
         .checkToken(token)
         .then((res) => {
@@ -147,8 +146,7 @@ function App() {
           setToolTipStatus("fail");
         }
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         setToolTipStatus("fail");
       })
       .finally(() => {
@@ -159,6 +157,7 @@ function App() {
   function onSignOut() {
     setLoggedIn(false);
     localStorage.removeItem("jwt");
+    localStorage.removeItem("email");
     history.push("/signin");
   }
 

@@ -35,14 +35,12 @@ const login = (req, res, next) => {
 
       res.send({ data: user.toJSON(), token });
     })
-    .catch((err) => {
-      console.log('err:', err);
+    .catch(() => {
       next(new Error('Incorrect email or password'));
     });
 };
 
 const createUser = (req, res, next) => {
-  console.log('here contoroller');
   // eslint-disable-next-line object-curly-newline
   const { name, avatar, about, email, password } = req.body;
   Users.findOne({ email })

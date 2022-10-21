@@ -60,7 +60,7 @@ userSchema.statics.findUserByCredentials = function (email, password) {
       if (!user) {
         return Promise.reject(new Error('Incorrect email of password'));
       }
-      // bcrypt.hash(password, 10).then((err, res) => console.log('two-1', res));
+
       return bcrypt.compare(password, user.password).then((match) => {
         if (!match) {
           return Promise.reject(new Error('Incorrect email of password'));
@@ -72,6 +72,7 @@ userSchema.statics.findUserByCredentials = function (email, password) {
 };
 
 userSchema.methods.toJSON = function () {
+  // eslint-disable-next-line no-unused-vars
   const { password, ...obj } = this.toObject();
   return obj;
 };

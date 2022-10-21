@@ -74,12 +74,12 @@ function App() {
 
   React.useEffect(() => {
     if (loggedIn) {
+      console.log("islogedein", loggedIn);
       auth
         .checkToken(token)
         .then((res) => {
           if (res) {
             setEmail(res.data.email);
-            setLoggedIn(true);
             history.push("/");
           }
         })
@@ -158,7 +158,7 @@ function App() {
 
   function onSignOut() {
     setLoggedIn(false);
-    localStorage.setItem("jwt", null);
+    localStorage.removeItem("jwt");
     history.push("/signin");
   }
 

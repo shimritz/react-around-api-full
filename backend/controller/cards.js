@@ -30,8 +30,8 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res, next) => {
-  const { cardId } = req.params;
-  Card.findById(cardId)
+  const { id } = req.params;
+  Card.findById(id)
     .orFail(() => new NotFoundError('No card found for the specified id'))
     .then((card) => {
       if (!card.owner.equals(req.user._id)) {
@@ -41,7 +41,7 @@ const deleteCard = (req, res, next) => {
       }
     })
 
-    // return Card.findByIdAndRemove(cardId)
+    // return Card.findByIdAndRemove(id)
     //   .orFail(() => {
     //     const error = new Error('No card found for the specified id');
     //     error.status = 404;
@@ -54,11 +54,11 @@ const deleteCard = (req, res, next) => {
 };
 
 const likeCard = (req, res) => {
-  const { cardId } = req.params;
+  const { id } = req.params;
   const userId = req.user._id;
 
   return Card.findByIdAndUpdate(
-    cardId,
+    id,
     { $addToSet: { likes: userId } }, // add _id to the array if it's not there yet
     { new: true }
   )
@@ -78,10 +78,10 @@ const likeCard = (req, res) => {
 };
 
 const disLikeCard = (req, res) => {
-  const { cardId } = req.params;
+  const { id } = req.params;
   const userId = req.user._id;
   return Card.findByIdAndUpdate(
-    cardId,
+    id,
     { $pull: { likes: userId } }, // remove _id to the array
     { new: true }
   )

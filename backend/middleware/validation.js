@@ -1,6 +1,6 @@
 /* eslint-disable newline-per-chained-call */
 const { Joi, celebrate } = require('celebrate');
-const { isObjectIdOrHexString } = require('mongoose');
+const { isValidObjectId } = require('mongoose');
 const validator = require('validator');
 
 // eslint-disable-next-line operator-linebreak
@@ -20,7 +20,7 @@ const validateObjId = celebrate({
     id: Joi.string()
       .required()
       .custom((value, helpers) => {
-        if (isObjectIdOrHexString.isValid(value)) {
+        if (isValidObjectId(value)) {
           return value;
         }
         return helpers.message('Invalid id');

@@ -1,9 +1,5 @@
-/* eslint-disable no-unused-vars */
-const { mongoose, isObjectIdOrHexString } = require('mongoose');
-
-// eslint-disable-next-line operator-linebreak
-const linkRegExp =
-  /[(http(s)?)://(www.)?a-zA-Z0-9@:%.+~#=]{2,256}.[a-z]{2,6}([-a-zA-Z0-9@:%+.~#?&//=]*)/gi;
+const { mongoose } = require('mongoose');
+const validator = require('validator');
 
 const cardSchema = mongoose.Schema({
   name: {
@@ -16,10 +12,7 @@ const cardSchema = mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => {
-        linkRegExp.test(v);
-      },
-      message: 'The link must be...',
+      validator: (v) => validator.isURL(v),
     },
   },
   owner: {

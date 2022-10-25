@@ -1,16 +1,18 @@
-/* eslint-disable indent */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Users = require('../models/users');
 
+const JWT_SECRET = require('../helpers/config');
+
 const ConflictError = require('../errors/conflict-error');
 const BadRequestError = require('../errors/bad-request-error');
 const NotFoundError = require('../errors/not-found-error');
+const UnauthorizedError = require('../errors/unauthorized-error');
 
-const getUsers = (req, res) =>
+const getUsers = (req, res, next) =>
   Users.find({})
     .then((users) => res.status(200).send({ data: users }))
-    .catch((err) => res.status(500).send(err));
+    .catch(next);
 
 const getUserById = (req, res, next) => {
   Users.findById(req.user._id)
@@ -29,14 +31,14 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
   return Users.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET.toString(), {
         expiresIn: '7d',
       });
 
       res.send({ data: user.toJSON(), token });
     })
     .catch(() => {
-      next(new Error('Incorrect email or password'));
+      next(new UnauthorizedError('Incorrect email or password'));
     });
 };
 

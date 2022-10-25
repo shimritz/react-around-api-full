@@ -1,23 +1,23 @@
 /* eslint-disable no-console */
-require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 
 const router = require('express').Router();
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
+const helmet = require('helmet');
 const auth = require('./middleware/auth');
 const { requestLogger, errorLogger } = require('./middleware/logger');
 
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
-// const NotFoundError = require('./errors/not-found-error');
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 const { PORT = 3001 } = process.env;
 
 const app = express();
+
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

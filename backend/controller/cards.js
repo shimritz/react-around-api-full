@@ -52,6 +52,7 @@ const likeCard = (req, res, next) => {
     { $addToSet: { likes: userId } }, // add _id to the array if it's not there yet
     { new: true }
   )
+    .orFail(new NotFoundError('Card not found'))
     .then((card) => {
       res.status(200).send({ data: card });
     })
@@ -66,6 +67,7 @@ const disLikeCard = (req, res, next) => {
     { $pull: { likes: userId } }, // remove _id to the array
     { new: true }
   )
+    .orFail(new NotFoundError('Card not found'))
     .then((card) => res.status(200).send({ data: card }))
     .catch(next);
 };

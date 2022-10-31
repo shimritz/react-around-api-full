@@ -8,6 +8,7 @@ const { errors } = require('celebrate');
 const helmet = require('helmet');
 const auth = require('./middleware/auth');
 const { requestLogger, errorLogger } = require('./middleware/logger');
+const NotFoundError = require('./errors/not-found-error');
 
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
@@ -17,11 +18,10 @@ const { PORT = 3001 } = process.env;
 
 const app = express();
 
-app.use(helmet());
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(helmet());
+app.use(cors());
 // const cardRouter = require('./cards');
 // const userRouter = require('./users');
 
@@ -48,15 +48,15 @@ router.use(auth);
 router.use('/cards', cardRouter);
 router.use('/users', userRouter);
 
-// router.use((req, res, next) => {
-//   next(new NotFoundError('Not found'));
-// });
 app.use('/', router);
 app.use(errorLogger);
-app.use(errors());
+app.use(errors);
 
 app.use(errorHandler);
 
+router.use((req, res, next) => {
+  next(new NotFoundError('No page found for the specific route'));
+});
 app.listen(PORT, (err) => {
   if (err) console.log(err);
   console.log(`App listening on port ${PORT}`);

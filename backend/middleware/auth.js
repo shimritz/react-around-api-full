@@ -8,7 +8,7 @@ const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    res.status(403).send({ message: 'no authorization header provided' });
+    next(new UnauthorizedError('no Authorization header provided'));
     return;
   }
   const token = authorization.substring(7, authorization.length);

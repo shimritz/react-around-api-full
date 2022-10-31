@@ -56,7 +56,15 @@ const likeCard = (req, res, next) => {
     .then((card) => {
       res.status(200).send({ data: card });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Invalid card id' });
+      } else if (err.status === 404) {
+        res.status(404).send({ message: 'not found' });
+      } else {
+        res.status(500).send({ message: 'An error occured' });
+      }
+    });
 };
 
 const disLikeCard = (req, res, next) => {

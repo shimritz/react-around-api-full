@@ -1,6 +1,6 @@
 class Api {
   constructor({ baseUrl, headers }) {
-    this._baseUrl = baseUrl || "";
+    this._baseUrl = baseUrl;
     this._headers = headers;
   }
 
@@ -83,7 +83,7 @@ class Api {
 }
 
 const api = new Api({
-  baseUrl: process.env.REACT_APP_BASE_URL,
+  baseUrl: process.env.REACT_APP_BASE_URL || "",
   headers: {
     "Content-Type": "application/json",
   },

@@ -1,6 +1,6 @@
 class Auth {
   constructor() {
-    this.baseUrl = process.env.REACT_APP_BASE_URL; //"https://register.nomoreparties.co";
+    this.baseUrl = process.env.REACT_APP_BASE_URL || ""; //"https://register.nomoreparties.co";
   }
 
   _checkResponse = (res) =>
